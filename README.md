@@ -30,6 +30,10 @@ Automatically deploy DigitalOcean droplets and install the challenge
     deploy.py ip <IP address>
         Install the challenge on an already deployed droplet
 
+    deploy.py server
+        Deploy a management server so teams can power cycle their droplets
+        This should only be run AFTER all droplets are deployed, as it copies over the current droplets.json
+
 ## server.py
 
 Simple HTTP server on port 80 that teams can query to power cycle their VM
