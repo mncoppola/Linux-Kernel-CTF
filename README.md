@@ -7,6 +7,11 @@ Maintains a list of deployed VMs in droplets.json. Designed around the use of Ub
 
 # Requirements
 
+*Dependencies*
+* pip install cherrypy
+* https://github.com/valerylisay/digitalocean-api
+
+*Configuration*
 * Configure challenge details in deploy.py (challenge name must match kernel module source directory)
 * Put DigitalOcean API key in the file API_KEY
 * Configure droplet details in deploy.py
