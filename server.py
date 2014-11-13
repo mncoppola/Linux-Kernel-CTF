@@ -1,11 +1,12 @@
 import cherrypy
 import json
+import os
 from daemonize import Daemonize
 from digitalocean import ClientV2
 from pprint import pformat
 
-DROPLETS_FILE = "droplets.json"
-API_KEY_FILE = "API_KEY"
+DROPLETS_FILE = os.path.join(os.getcwd(), "droplets.json")
+API_KEY_FILE = os.path.join(os.getcwd(), "API_KEY")
 
 def get_api_key():
     with open(API_KEY_FILE, "r") as f:
