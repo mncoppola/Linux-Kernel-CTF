@@ -2,7 +2,6 @@ import json
 
 DROPLETS_FILE = "droplets.json"
 
-# Reading from a file every time allows live updates to the droplets list
 def get_droplets():
     with open(DROPLETS_FILE, "r") as f:
         data = f.read()
