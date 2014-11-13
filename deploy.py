@@ -75,13 +75,13 @@ def new_droplet(name, key_id):
     data = client.droplets.get(droplet_id=droplet_id)
     return droplet_id, data["droplet"]["networks"]["v4"][0]["ip_address"]
 
-def get_droplet_id(ip):
+def get_droplet_info(ip):
     client = ClientV2(token=get_api_key())
     data = client.droplets.all()
     for droplet in data["droplets"]:
         for v4 in droplet["networks"]["v4"]:
             if v4["ip_address"] == ip:
-                return droplet["id"]
+                return droplet["id"], droplet["name"]
     print "[-] Failed to find droplet ID for IP address %s on this account!" % ip
     sys.exit(1)
 
@@ -136,7 +136,7 @@ def scp_put_root(ip, src, dst):
 def scp_put_user(ip, src, dst):
     scp_put(ip, USERNAME, src, dst)
 
-def setup_challenge(droplet_id, ip):
+def setup_challenge(droplet_id, droplet_name, ip):
     print "[+] Setting up IP address %s" % ip
 
     print "[+] Disabling OS security settings..."
@@ -187,6 +187,7 @@ def setup_challenge(droplet_id, ip):
 
     droplet = {
         "id": droplet_id,
+        "name": droplet_name,
         "ip_address": ip,
         "password": password,
     }
@@ -203,20 +204,22 @@ def main():
 
     if cmd == "single":
         key_id = add_key()
-        droplet_id, ip = new_droplet(sys.argv[2], key_id)
+        droplet_name = sys.argv[2]
+        droplet_id, ip = new_droplet(droplet_name, key_id)
         print "[+] IP address of new droplet: %s" % ip
-        setup_challenge(droplet_id, ip)
+        setup_challenge(droplet_id, droplet_name, ip)
     elif cmd == "multiple":
         num = int(sys.argv[2])
         key_id = add_key()
         for x in xrange(num):
-            droplet_id, ip = new_droplet("team%d" % (x + 1), key_id)
+            droplet_name = "team%d" % (x + 1)
+            droplet_id, ip = new_droplet(droplet_name, key_id)
             print "[+] IP address of new droplet: %s" % ip
-            setup_challenge(droplet_id, ip)
+            setup_challenge(droplet_id, droplet_name, ip)
     elif cmd == "ip":
         ip = sys.argv[2]
-        droplet_id = get_droplet_id(ip)
-        setup_challenge(droplet_id, ip)
+        droplet_id, droplet_name = get_droplet_info(ip)
+        setup_challenge(droplet_id, droplet_name, ip)
     else:
         usage()
 
