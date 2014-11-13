@@ -8,7 +8,7 @@ Maintains a list of deployed VMs in droplets.json. Designed around the use of Ub
 # Requirements
 
 * Configure challenge details in deploy.py (challenge name must match kernel module source directory)
-* Put DigitalOcean API key in API_KEY
+* Put DigitalOcean API key in the file API_KEY
 * Configure droplet details in deploy.py
 
 ## deploy.py
