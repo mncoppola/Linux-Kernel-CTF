@@ -9,6 +9,7 @@ Maintains a list of deployed VMs in droplets.json. Designed around the use of Ub
 
 *Dependencies*
 * pip install cherrypy
+* pip install daemonize
 * https://github.com/valerylisay/digitalocean-api
 
 *Configuration*

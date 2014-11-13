@@ -1,5 +1,6 @@
 import cherrypy
 import json
+from daemonize import Daemonize
 from digitalocean import ClientV2
 from pprint import pformat
 
@@ -57,4 +58,6 @@ def main():
     cherrypy.quickstart(Root(), "/")
 
 if __name__ == "__main__":
-    main()
+    pid = "/tmp/ctf-server.pid"
+    daemon = Daemonize(app="CTF server", pid=pid, action=main)
+    daemon.start()
