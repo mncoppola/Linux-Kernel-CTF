@@ -28,4 +28,4 @@ Automatically deploy DigitalOcean droplets and install the challenge
 
 Simple HTTP server on port 80 that teams can query to power cycle their VM
 
-/reboot?ip_address=1.2.3.4&password=password
+    /reboot?ip_address=1.2.3.4&password=password
