@@ -189,6 +189,7 @@ def setup_challenge(droplet_id, droplet_name, ip):
         "id": droplet_id,
         "name": droplet_name,
         "ip_address": ip,
+        "username": USERNAME,
         "password": password,
     }
 
