@@ -28,6 +28,7 @@ def usage():
     print "  %s multiple <number>" % sys.argv[0]
     print "  %s single <droplet name>" % sys.argv[0]
     print "  %s ip <IP address>" % sys.argv[0]
+    print "  %s server" % sys.argv[0]
     sys.exit(1)
 
 def get_api_key():
@@ -136,6 +137,31 @@ def scp_put_root(ip, src, dst):
 def scp_put_user(ip, src, dst):
     scp_put(ip, USERNAME, src, dst)
 
+def setup_server(droplet_id, droplet_name, ip):
+    print "[+] Setting up IP address %s as management server" % ip
+
+    print "[+] Updating system..."
+    exec_root(ip, "apt-get update")
+    exec_root(ip, "apt-get install make python-pip git -y")
+    exec_root(ip, "apt-get dist-upgrade -y")
+    exec_root(ip, "pip install daemonize")
+    exec_root(ip, "pip install cherrypy")
+    exec_root(ip, "git clone https://github.com/valerylisay/digitalocean-api; cd digitalocean-api; python setup.py install")
+    exec_root(ip, "reboot")
+
+    print "[+] Upgrade complete, waiting for reboot..."
+    time.sleep(60)
+
+    print "[+] Copying over server files..."
+    scp_put_root(ip, "server.py", "/root/server.py")
+    scp_put_root(ip, "API_KEY", "/root/API_KEY")
+    scp_put_root(ip, "droplets.json", "/root/droplets.json")
+
+    print "[+] Starting server..."
+    exec_root(ip, "python server.py")
+
+    print "[+] Server installation complete! http://%s/reboot" % ip
+
 def setup_challenge(droplet_id, droplet_name, ip):
     print "[+] Setting up IP address %s" % ip
 
@@ -198,10 +224,13 @@ def setup_challenge(droplet_id, droplet_name, ip):
     put_droplets(droplets)
 
 def main():
-    if len(sys.argv) != 3:
+    if (len(sys.argv) != 2) and (len(sys.argv) != 3):
         usage()
 
     cmd = sys.argv[1]
+
+    if (len(sys.argv) == 2) and (cmd != "server"):
+        usage()
 
     if cmd == "single":
         key_id = add_key()
@@ -221,6 +250,12 @@ def main():
         ip = sys.argv[2]
         droplet_id, droplet_name = get_droplet_info(ip)
         setup_challenge(droplet_id, droplet_name, ip)
+    elif cmd == "server":
+        key_id = add_key()
+        droplet_name = "%s-management-server" % CHALLENGE
+        droplet_id, ip = new_droplet(droplet_name, key_id)
+        print "[+] IP address of new droplet: %s" % ip
+        setup_server(droplet_id, droplet_name, ip)
     else:
         usage()
 
