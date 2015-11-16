@@ -11,9 +11,10 @@ from digitalocean import ClientV2
 # Challenge config
 USERNAME = "csaw"
 CHALLENGE = "superawesomechallenge"
+CHAR_DEV_NAME = "csaw"
 ARCH = "x86_64"
 FLAG = "flag{xxx}"
-KEY_PATH = "/path/to/ssh/key/id_rsa"
+KEY_PATH = "/path/to/ssh/private/key/id_rsa"
 
 # Digital Ocean stuff
 IMAGE_ID = "ubuntu-14-04-x64"
@@ -165,13 +166,13 @@ def setup_server(droplet_id, droplet_name, ip):
 def setup_challenge(droplet_id, droplet_name, ip):
     print "[+] Setting up IP address %s" % ip
 
-    print "[+] Disabling OS security settings..."
-    exec_root(ip, "echo kernel.kptr_restrict = 0 >> /etc/sysctl.conf")
-    exec_root(ip, "echo kernel.dmesg_restrict = 0 >> /etc/sysctl.conf")
+    print "[+] Enabling OS security settings..."
+    exec_root(ip, "echo kernel.kptr_restrict = 1 >> /etc/sysctl.conf")
+    exec_root(ip, "echo kernel.dmesg_restrict = 1 >> /etc/sysctl.conf")
 
     print "[+] Updating system..."
     exec_root(ip, "apt-get update")
-    exec_root(ip, "apt-get install make gcc -y")
+    exec_root(ip, "apt-get install make gcc vim -y")
     exec_root(ip, "apt-get dist-upgrade -y")
     exec_root(ip, "reboot")
 
@@ -205,6 +206,7 @@ def setup_challenge(droplet_id, droplet_name, ip):
 
     print "[+] Installing challenge..."
     exec_root(ip, "cp /home/%s/%s/%s.ko /lib/modules/`uname -r`/" % (USERNAME, CHALLENGE, CHALLENGE))
+    exec_root(ip, "echo KERNEL==\\\"%s\\\", MODE=\\\"0666\\\" >> /etc/udev/rules.d/10-%s.rules" % (CHAR_DEV_NAME, CHAR_DEV_NAME))
     exec_root(ip, "depmod -a")
     exec_root(ip, "echo %s >> /etc/modules" % CHALLENGE)
     exec_root(ip, "reboot")
