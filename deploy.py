@@ -181,7 +181,7 @@ def setup_challenge(droplet_id, droplet_name, ip):
 
     print "[+] Creating %s user..." % USERNAME
     exec_root(ip, "useradd -m -s /bin/bash %s" % USERNAME)
-    password = gen_password(16)
+    password = gen_password(8)
     exec_root(ip, "echo '%s:%s' | chpasswd" % (USERNAME, password))
     print "[+] Set %s password to: %s" % (USERNAME, password)
     exec_root(ip, "mkdir /home/%s/.ssh" % USERNAME)
